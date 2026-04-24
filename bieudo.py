@@ -19,8 +19,11 @@ CARD     = "#1A1A2E"
 TEXT     = "#E8E8F0"
 GRID     = "#2A2A40"
 PALETTE  = sns.color_palette("husl", 10)
+<<<<<<< HEAD
 GREEN    = "#10B981"
 YELLOW   = "#F59E0B"
+=======
+>>>>>>> ece368a1aad22e0aec08249acdb8535de9aa7588
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FIGURE 1 – Line chart: Global Sales by Year
@@ -215,6 +218,10 @@ wedges, texts, autotexts = ax.pie(
     explode=(0.05, 0.05, 0.05, 0.05)
 )
 
+<<<<<<< HEAD
+=======
+# Dinh dang chu
+>>>>>>> ece368a1aad22e0aec08249acdb8535de9aa7588
 for text in texts:
     text.set_color(TEXT)
     text.set_fontsize(13)
@@ -231,6 +238,7 @@ fig5.savefig(r'C:\Users\Admin\PycharmProjects\Phantichgame_36\chart5_pie_region.
              dpi=150, bbox_inches='tight', facecolor=BG)
 print("Chart 5 saved.")
 
+<<<<<<< HEAD
 # ─────────────────────────────────────────────────────────────────────────────
 # FIGURE 6 – Doanh so tang manh giai doan 2000–2010
 # ─────────────────────────────────────────────────────────────────────────────
@@ -341,3 +349,5 @@ print("Chart 6 saved.")
 # ─────────────────────────────────────────────────────────────────────────────
 print("\nTat ca bieu do da duoc xuat thanh cong!")
 plt.show()
+=======
+>>>>>>> ece368a1aad22e0aec08249acdb8535de9aa7588
