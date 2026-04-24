@@ -1,65 +1,202 @@
-# Báo Cáo Phân Tích Dữ Liệu Doanh Số Game 
+# Video Game Sales Analysis & Prediction
 
-Dự án này tập trung vào quy trình phân tích, làm sạch dữ liệu, trực quan hóa và xây dựng mô hình dự đoán cơ bản dựa trên bộ dữ liệu doanh số ngành công nghiệp game toàn cầu.
+## 1. Giới thiệu
+Dự án này thực hiện bài toán phân tích và dự đoán doanh số trò chơi điện tử từ bộ dữ liệu `vgsales.csv`. Đây là bài toán phân tích khám phá (EDA) và hồi quy với biến mục tiêu là `Global_Sales` (Doanh số toàn cầu). Mục tiêu của nhóm là xử lý dữ liệu thiếu, phân tích các xu hướng của thị trường game qua các năm, nền tảng, thể loại, trực quan hóa dữ liệu bằng các biểu đồ sinh động và xây dựng mô hình hồi quy tuyến tính cơ bản để dự đoán tổng doanh số theo năm.
 
-## 1. Quá trình Làm sạch Dữ liệu (Data Cleaning)
-Quá trình tiền xử lý được thực hiện thông qua tệp `DataCleaning.py`:
-- **Tập dữ liệu gốc:** `vgsales.csv` với tổng cộng **16.598** dòng.
-- **Các bước xử lý:**
-  - Phát hiện **271** dòng bị khuyết (missing) dữ liệu ở trường `Year` và **58** dòng khuyết `Publisher`.
-  - Đã tiến hành **loại bỏ 271 dòng thiếu thông tin năm (`Year`)** do đây là trường dữ liệu quan trọng cốt lõi phục vụ các phân tích theo chiều thời gian.
-  - Kiểm tra và đảm bảo không có dòng dữ liệu nào bị trùng lặp (Duplicates = 0).
-  - Chuyển đổi kiểu dữ liệu của cột `Year` từ `float` sang `integer` để thống nhất chuẩn hiển thị số nguyên cho năm.
-- **Tập dữ liệu đầu ra:** `vgsales_clean.csv` với **16.327** dòng dữ liệu chuẩn xác, sẵn sàng cho pha phân tích.
-- **Các trường dữ liệu (Columns):** 
-  - `Rank` (int), `Name` (str), `Platform` (str), `Year` (int), `Genre` (str), `Publisher` (str).
-  - Các trường doanh số: `NA_Sales`, `EU_Sales`, `JP_Sales`, `Other_Sales`, `Global_Sales` (tất cả đều là kiểu float tính theo đơn vị triệu bản).
+## 2. Mục tiêu bài toán
+- Xử lý dữ liệu thiếu trong tập dữ liệu gốc.
+- Phân tích mối quan hệ giữa `Global_Sales` và các biến phân loại/thời gian (Năm, Nền tảng, Thể loại, Khu vực).
+- Trực quan hóa dữ liệu bằng Line chart, Bar chart, Heatmap và Pie chart thông qua Matplotlib và Seaborn.
+- Xây dựng mô hình hồi quy tuyến tính dự đoán tổng doanh số toàn cầu theo năm.
+- Đánh giá mô hình bằng chỉ số $R^2$ Score.
 
-## 2. Công cụ và Môi trường sử dụng
-- **Ngôn ngữ lập trình:** Python 3.
-- **Môi trường IDE:** PyCharm.
-- **Quản lý môi trường:** Môi trường ảo (`.venv`).
-- **Các thư viện (Libraries):**
-  - **Pandas:** Đọc, làm sạch, và thao tác với dữ liệu tabular (Dataframe).
-  - **Matplotlib & Seaborn:** Trực quan hóa dữ liệu (Visualization) để tạo các biểu đồ nâng cao, sắc nét, có bảng màu chuyên nghiệp.
-  - **Numpy:** Hỗ trợ tính toán ma trận và xây dựng thuật toán Machine Learning.
+## 3. Dataset sử dụng
+- File dữ liệu gốc: `vgsales.csv`
+- File dữ liệu đã làm sạch: `vgsales_clean.csv`
+- Số dòng dữ liệu ban đầu: 16.598
+- Số dòng dữ liệu sau làm sạch: 16.327
+- Biến mục tiêu: `Global_Sales`
 
-## 3. Các Biểu đồ và Kết quả Phân tích (Visualization)
-Được xử lý chính trong `bieudo.py` và `EDA.py`, nhóm đã vẽ 5 biểu đồ trực quan khai thác sâu các khía cạnh:
-1. **Biểu đồ Đường (Line Chart):** *Doanh số game toàn cầu theo năm (1980 - 2015).* 
-   - Số liệu nổi bật: Ngành game đạt đỉnh điểm về mặt doanh số đĩa cứng vào năm **2008** với mức kỷ lục đạt **~679 triệu bản** được bán ra trên toàn cầu.
-2. **Biểu đồ Cột Ngang (Horizontal Bar Chart):** *Doanh số theo Thể loại (Genre).*
-   - Số liệu nổi bật: Các thể loại thống trị thị trường một cách áp đảo là **Action** (hơn 1.700 triệu bản), **Sports** (hơn 1.300 triệu bản), và **Shooter** (hơn 1.000 triệu bản).
-3. **Biểu đồ Cột Dọc (Vertical Bar Chart):** *Doanh số theo Nền tảng (Platform).*
-   - Số liệu nổi bật: Hệ máy console có doanh số phần mềm bán ra cao nhất lịch sử là **PS2** (~1.255 triệu bản), theo sau bởi các cỗ máy như **X360**, **PS3**, **Wii** và **DS**.
-4. **Biểu đồ Nhiệt (Heatmap):** *Tương quan Doanh số giữa Thể loại và Khu vực.*
-   - Cho thấy rõ sức mua của từng khu vực phân hóa theo dòng game (Ví dụ: game Role-Playing cực thịnh ở Nhật Bản so với các nước phương Tây).
-5. **Biểu đồ Tròn (Pie Chart):** *Thị phần doanh số theo Khu vực.*
-   - Thống kê tỷ trọng tiêu thụ game toàn cầu: **Bắc Mỹ (49.3%)**, **Châu Âu (27.3%)**, **Nhật Bản (14.6%)**, và phần còn lại của thế giới (8.8%).
+Một số đặc trưng quan trọng ảnh hưởng đến phân tích doanh số:
+- `Year`: Năm phát hành.
+- `Genre`: Thể loại game.
+- `Platform`: Hệ máy (Nền tảng).
+- `Publisher`: Nhà phát hành.
+- Doanh số phân vùng: `NA_Sales`, `EU_Sales`, `JP_Sales`, `Other_Sales`.
 
-## 4. Mô hình Dự đoán (Modeling)
-Dự án triển khai một mô hình **Hồi quy Tuyến tính (Simple Linear Regression)** được lập trình toán học thủ công bằng *Numpy* (không dùng thư viện ăn sẵn như `scikit-learn`):
-- **Feature (Đặc trưng):** `Year` (Năm phát hành).
-- **Target (Mục tiêu):** `Global_Sales` (Tổng doanh số toàn cầu).
-- **Đánh giá:** Tính toán độ tin cậy $R^2$ score trực tiếp trên tập test (Test Set) sau khi tiến hành Train/Test Split với tỷ lệ 80/20.
+## 4. Quy trình thực hiện
+### Bước 1. Đọc và kiểm tra dữ liệu
+Dữ liệu được đọc từ `vgsales.csv` bằng thư viện `pandas`. Tiến hành thống kê số lượng dòng, kiểm tra kiểu dữ liệu và đếm số lượng giá trị thiếu trong từng trường.
 
-## 5. Hướng dẫn Chạy Chương trình
-Để chạy thử nghiệm các tiến trình, hãy mở Terminal (command prompt hoặc terminal của PyCharm) tại thư mục `BTL` và sử dụng môi trường ảo `.venv` có sẵn để chạy mã:
+### Bước 2. Xử lý dữ liệu thiếu
+Trong project, quy trình làm sạch được tập trung trong tệp `DataCleaning.py`:
+- Thống kê phát hiện 271 dòng khuyết `Year` và 58 dòng khuyết `Publisher`.
+- Tiến hành loại bỏ 271 dòng thiếu thông tin năm (`Year`) do đây là mốc thời gian cực kỳ quan trọng cho các chuỗi phân tích.
+- Loại bỏ các dòng dữ liệu trùng lặp (nếu có).
+- Chuyển đổi kiểu dữ liệu cột `Year` từ `float` sang `integer` để thống nhất chuẩn hiển thị số nguyên.
+- Lưu dữ liệu sạch ra tệp `vgsales_clean.csv`.
 
-**Bước 1: Làm sạch dữ liệu (Data Cleaning)**
+### Bước 3. Phân tích mối quan hệ giữa doanh số và các yếu tố
+Thông qua file `EDA.py`, project tiến hành phân tích sự biến động của `Global_Sales` theo đa chiều:
+- Tính tổng doanh số và số lượng game phát hành theo từng năm.
+- Thống kê doanh số theo Thể loại (Genre) và Hệ máy (Platform).
+- Nhóm top các tựa game và nhà phát hành có doanh thu cao nhất lịch sử.
+
+Kết quả nổi bật:
+- Năm đỉnh cao của ngành game là 2008 với mức doanh số khoảng ~679 triệu bản.
+- Action, Sports và Shooter là 3 thể loại dẫn đầu thị trường.
+- PS2 là nền tảng thống trị lịch sử với hơn 1.255 triệu bản phần mềm được bán ra.
+
+### Bước 4. Trực quan hóa
+Script `bieudo.py` sinh ra các biểu đồ chuyên nghiệp (sử dụng Seaborn):
+- `chart1_line_yearly_sales.png`: Line chart sự biến động doanh số toàn cầu theo từng năm.
+- `chart2_bar_genre_sales.png`: Bar chart nằm ngang thể hiện tổng doanh số các thể loại.
+- `chart3_bar_platform_sales.png`: Bar chart dọc cho top nền tảng bán chạy nhất.
+- `chart4_heatmap_genre_region.png`: Heatmap tương quan sức mua giữa các thể loại và các vùng lãnh thổ (Bắc Mỹ, Châu Âu, Nhật Bản...).
+- `chart5_pie_region.png`: Pie chart hiển thị thị phần doanh số theo khu vực.
+
+### Bước 5. Xây dựng mô hình
+Mô hình được sử dụng là **Simple Linear Regression** (Hồi quy tuyến tính đơn biến) được lập trình thủ công hoàn toàn bằng `Numpy` trong file `model.py` (không dùng scikit-learn).
+Pipeline huấn luyện gồm:
+- Load dữ liệu và chia train/test theo tỷ lệ `80/20`.
+- Sử dụng biến `Year` (Năm phát hành) làm feature đầu vào.
+- Sử dụng `Global_Sales` làm biến mục tiêu (target).
+- Huấn luyện mô hình (tính toán `slope` và `intercept` bằng công thức toán học ma trận).
+- Viết hàm `predict` để dự đoán doanh số cho một năm bất kỳ.
+
+### Bước 6. Đánh giá mô hình
+Kết quả mô hình được đánh giá trên tập test bằng hệ số xác định $R^2$ Score thông qua hàm `score()`.
+- Chức năng đánh giá được gọi thông qua script `main.py`.
+- Mặc dù dữ liệu doanh số qua các năm có độ biến động rất mạnh (không hoàn toàn tuyến tính), mô hình cơ bản cung cấp một đường xu hướng gốc để hình dung đà tăng/giảm của thị trường qua thời gian dài.
+
+## 5. Giải thích chi tiết các file trong project
+### File dữ liệu
+- `vgsales.csv`: Bộ dữ liệu gốc ban đầu chứa hơn 16.598 tựa game.
+- `vgsales_clean.csv`: Dữ liệu đã được tiền xử lý và loại bỏ các dòng bị khuyết năm phát hành.
+- `eda_outputs/`: Thư mục chứa các file `.csv` trích xuất dạng bảng tổng hợp từ quá trình thống kê phân tích (top 10 games, doanh số theo nền tảng/thể loại, v.v.).
+
+### File mã nguồn
+- `DataCleaning.py`: Script tiền xử lý dữ liệu, kiểm tra null, ép kiểu và sinh file sạch.
+- `EDA.py`: Chứa các hàm gom nhóm, phân tích thống kê, in ra console và xuất bảng số liệu ra thư mục output.
+- `bieudo.py`: Chứa mã nguồn để thiết lập style, màu sắc và vẽ 5 biểu đồ trực quan chính của dự án, sau đó lưu thành các file hình ảnh `.png`.
+- `model.py`: Chứa logic thuật toán `SimpleLinearRegression` bao gồm fit, predict, score; cùng với các hàm load data và train test split từ đầu.
+- `main.py`: Entrypoint của phần Modeling. Chạy file này để nhập năm cần dự đoán từ bàn phím và in ra kết quả mô hình.
+
+### File kết quả (Hình ảnh biểu đồ)
+- `chart1_line_yearly_sales.png`
+- `chart2_bar_genre_sales.png`
+- `chart3_bar_platform_sales.png`
+- `chart4_heatmap_genre_region.png`
+- `chart5_pie_region.png`
+
+## 6. Cấu trúc thư mục thực tế
+```text
+BTL/
+|-- .venv/
+|-- vgsales.csv
+|-- vgsales_clean.csv
+|-- DataCleaning.py
+|-- EDA.py
+|-- bieudo.py
+|-- model.py
+|-- main.py
+|-- README.md
+|-- eda_outputs/
+|   |-- game_count_by_year.csv
+|   |-- sales_by_genre.csv
+|   |-- sales_by_platform.csv
+|   |-- sales_by_year.csv
+|   |-- top_10_games.csv
+|   `-- top_publishers.csv
+|-- chart1_line_yearly_sales.png
+|-- chart2_bar_genre_sales.png
+|-- chart3_bar_platform_sales.png
+|-- chart4_heatmap_genre_region.png
+`-- chart5_pie_region.png
+```
+
+## 7. Cách chạy chương trình
+### Cài đặt thư viện
+Nếu không dùng môi trường ảo đi kèm, bạn có thể thiết lập bằng cách:
 ```bash
-.\.venv\Scripts\python.exe DataCleaning.py
+pip install pandas numpy matplotlib seaborn
+```
+
+### Bước 1: Làm sạch dữ liệu
+```bash
+python DataCleaning.py
 ```
 *(Đọc từ `vgsales.csv` và sinh ra file sạch `vgsales_clean.csv`)*
 
-**Bước 2: Xuất các Biểu đồ (Visualization)**
+### Bước 2: Thống kê số liệu & Xuất Biểu đồ
 ```bash
-.\.venv\Scripts\python.exe bieudo.py
+python EDA.py
+python bieudo.py
 ```
-*(Chương trình sẽ tự động vẽ và lưu 5 file ảnh biểu đồ có đuôi `.png` trực tiếp vào trong thư mục dự án)*
+*(Sẽ in ra các thống kê ở màn hình, đồng thời lưu 5 file ảnh biểu đồ `.png`)*
 
-**Bước 3: Chạy Huấn luyện và Dự đoán bằng Linear Regression**
+### Bước 3: Huấn luyện và Dự đoán
 ```bash
-.\.venv\Scripts\python.exe main.py
+python main.py
 ```
-*(Giao diện dòng lệnh sẽ in ra thông báo, bạn cần gõ số năm muốn dự đoán (ví dụ: `2026` hoặc `2030`), sau đó Enter để xem mức doanh số dự kiến và điểm số R² của mô hình).*
+*(Nhập năm bạn muốn dự đoán, ví dụ: 2026, chương trình sẽ in ra dự đoán tổng doanh số và điểm R² của mô hình).*
+
+## 8. Kết luận
+Project đã hoàn thành các yêu cầu chính:
+- Có quy trình xử lý dữ liệu thiếu và chuẩn hóa bài bản.
+- Có phân tích sự ảnh hưởng, biến động của doanh số với các yếu tố như năm, thể loại, nền tảng.
+- Có trực quan hóa bằng hệ thống đa dạng các biểu đồ sinh động (Seaborn nâng cao).
+- Có xây dựng mô hình dự đoán từ đầu.
+- Có đánh giá mô hình khách quan qua độ chính xác R^2.
+
+## 9. Thành viên nhóm 36
+- Nguyễn Viết Phong (20220543)
+- Phân tích dữ liệu (EDA)  Thực hiện phân tích tương quan (Correlation Analysis).
+
+Nhiệm vụ:
+
+Phân tích doanh số theo năm
+Phân tích doanh số theo thể loại (Genre)
+Phân tích doanh số theo nền tảng (Platform)
+Tìm top game bán chạy nhất
+Tổng hợp kết quả phân tích
+
+👉 Kết quả: Bảng số liệu + nhận xét ban đầu
+- Hoàng Quang Hợp (20220589)
+- Data Cleaning & Chuẩn bị dữ liệu
+
+Nhiệm vụ:
+
+Thu thập và tải dataset từ Kaggle
+Đọc và kiểm tra dữ liệu ban đầu
+Xử lý dữ liệu thiếu (missing values)
+Chuyển đổi kiểu dữ liệu (Year → int)
+Loại bỏ dữ liệu trùng lặp
+Xuất file dữ liệu đã làm sạch
+
+👉 Kết quả: Dataset sạch (vgsales_clean.csv)
+
+- Hoàng Mậu Phong(20220535)
+- Trực quan hóa dữ liệu (Visualization)
+
+Nhiệm vụ:
+
+Vẽ biểu đồ:
+Line chart (doanh số theo năm)
+Bar chart (thể loại, platform)
+Làm biểu đồ đẹp, dễ hiểu
+(Optional) Sử dụng seaborn để nâng cao
+Xuất hình ảnh biểu đồ để đưa vào báo cáo
+
+👉 Kết quả: Hình ảnh biểu đồ (PNG)
+
+- Hà Thị Thanh Tâm(20220551)
+- Đánh giá mô hình (accuracy hoặc score)
+Viết báo cáo tổng hợp:
+Giới thiệu
+Phương pháp
+Kết quả
+Insight
+
+👉 Kết quả: File PDF + Slide
+
